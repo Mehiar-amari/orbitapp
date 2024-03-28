@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState,useRef ,useCallback, useMemo} from 'react';
 import { StyleSheet, Text, SafeAreaView, TouchableOpacity, View ,Image} from 'react-native';
 import SignInScreen from './screens/SignInScreen/SignInScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -11,15 +11,61 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import { Octicons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import { FontAwesome5 } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import Modalize from 'react-native-modalize';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+const openBottomSheet = (bottomSheetRef) => {
+  bottomSheetRef.current?.open();
+};
+
+
+const BottomSheetContent = () => {
+  
+  return (
+    // Content of your bottom sheet
+    // Add your content here
+    <View>
+       <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={['25%', '50%', '75%']}
+        index={0}
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.bottomSheetHandleIndicator}
+      >
+        <View style={styles.content}>
+          <Text>This is the bottom sheet content.</Text>
+        </View>
+      </BottomSheet>
+    </View>
+  );
+};
+
+
 
 function DrawerContent({ navigation }) {
   const navigateToScreen = (screenName) => {
     navigation.navigate(screenName);
     navigation.closeDrawer();
   };
+
+
+
+  const sheetRef = useRef<BottomSheet>(null);
+  const [IsOpen, setIsOpen] = useState(true);
+  const snapPoints = ['40%', '60%', '90%'];
+
+  const bottomSheetRef = useRef(null);
+
+  const openBottomSheet = () => {
+    bottomSheetRef.current.expand();
+  };
+
+  const closeBottomSheet = () => {
+    bottomSheetRef.current.collapse();
+  };
+
 
   return (
     <SafeAreaView style={styles.drawerContainer}>
@@ -54,11 +100,24 @@ function DrawerContent({ navigation }) {
       <Text style={styles.text}>Sign Out</Text>
     </TouchableOpacity>
   </View>
+
+  <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={['25%', '50%', '75%']}
+        index={0}
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.bottomSheetHandleIndicator}
+      >
+        <View style={styles.content}>
+          <Text>This is the bottom sheet content.</Text>
+        </View>
+      </BottomSheet>
 </SafeAreaView>
   );
 }
 
 export default function App() {
+  
   return (
     <NavigationContainer>
       <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />} >
@@ -73,45 +132,98 @@ export default function App() {
 }
 
 const MainStackNavigator = () => {
+  const sheetRef = useRef<BottomSheet>(null);
+  const [IsOpen, setIsOpen] = useState(true);
+  const snapPoints = ['40%', '60%', '90%'];
+
+  const bottomSheetRef = useRef(null);
+
+  const openBottomSheet = () => {
+    bottomSheetRef.current.expand();
+  };
+
+  const closeBottomSheet = () => {
+    bottomSheetRef.current.collapse();
+  };
+
   return (
-    <Stack.Navigator screenOptions={{headerTitle: '',}}>
-      <Stack.Screen 
-        name="SignIn" 
-        component={SignInScreen} 
-        options={{ headerShown: false }} 
+    <Stack.Navigator screenOptions={{ headerTitle: '' }}>
+      <Stack.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={{ headerShown: false }}
       />
-      <Stack.Screen 
-        name="NavPage" 
-        component={NavPage} 
+      <Stack.Screen
+        name="NavPage"
+        component={NavPage}
         options={({ navigation }) => ({
-          headerRight: () => (
+          headerLeft: () => (
             <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
-              style={{ marginRight: 15 }}
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={{ marginLeft: 15 }}
             >
-              <Ionicons name="menu" size={24} color="black" />
+              <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  // Handle notification icon press
+                }}
+                style={{ marginRight: 10 }}
+              >
+                <Ionicons name="notifications" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+              >
+                <Ionicons name="menu" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           ),
         })}
       />
-      <Stack.Screen 
-        name="PageH" 
-        component={PageH} 
+      <Stack.Screen
+        name="PageH"
+        component={PageH}
         options={({ navigation }) => ({
-          headerRight: () => (
+          headerLeft: () => (
             <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
-              style={{ marginRight: 15 }}
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={{ marginLeft: 15 }}
             >
-              <Ionicons name="menu" size={24} color="black" />
+              <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  
+                }}
+                style={{ marginRight: 10 }}
+              >
+                <Ionicons name="notifications" size={24} color="black" />
+              </TouchableOpacity>
+             
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+              >
+                <Ionicons name="menu" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           ),
         })}
       />
       {/* Add other screens here */}
     </Stack.Navigator>
   );
-}
+};
 
 const styles = StyleSheet.create({
   drawerContainer: {
@@ -166,5 +278,25 @@ const styles = StyleSheet.create({
     height: 100, // Adjust the height as needed
     marginBottom: 10, // Adjust the margin bottom as needed
     borderBottomWidth: 1,
+  },
+  bottomSheetBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 5, // Ensure the background covers the entire screen
+    borderTopLeftRadius: 20, // Adjust border radius if needed
+    borderTopRightRadius: 20, // Adjust border radius if needed
+  },
+  bottomSheetHandleIndicator: {
+    backgroundColor: '#fff',
+    width: 40, // Adjust width if needed
+    height: 5, // Adjust height if needed
+    borderRadius: 2.5, // Optional: Add border radius if needed
+    alignSelf: 'center', // Center the handle indicator horizontally
+    marginTop: 10, // Optional: Adjust margin top if needed
+  },
+  content: {
+    padding: 30,
+    backgroundColor: '#fff',
+    flex: 5, // Ensure the content fills the entire bottom sheet
+    // You can add more styles as needed
   },
 });

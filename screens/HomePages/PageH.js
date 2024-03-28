@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState,useRef ,useCallback, useMemo} from 'react';
 import { Text, View, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from 'react-native-vector-icons';
 import { FONTS, COLORS } from '../../constants/theme';
 import { FontAwesome, Octicons } from '@expo/vector-icons';
-
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 const PageH = () => {
+
+ 
+
+
+
   const [selectedMonth1, setSelectedMonth1] = useState('');
   const [selectedMonth2, setSelectedMonth2] = useState('');
   const [selectedMonth3, setSelectedMonth3] = useState('');
@@ -350,6 +355,7 @@ const PageH = () => {
         
         
       </View>
+     
     </ScrollView>
   );
 };

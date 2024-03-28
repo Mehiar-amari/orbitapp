@@ -1,4 +1,4 @@
-import React, { useState , useEffect,  }from 'react';
+import React, { useState , useEffect,useRef  }from 'react';
 
 import { Text, View, TextInput, StyleSheet, useWindowDimensions, SafeAreaView, TouchableOpacity, ScrollView ,Image,Dimensions} from 'react-native';
 import { Shadow } from 'react-native-shadow-2';
@@ -19,6 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 
 
 const NavPage = () => {
+  
   const [jdata, setData] = useState(null);
 
   useEffect(() => {
