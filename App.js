@@ -11,6 +11,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import { Octicons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import { FontAwesome5 } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
+import NotificationScreen from './screens/NotificationScreen'; // Import the new screen component
+
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -85,12 +87,20 @@ const MainStackNavigator = () => {
         component={NavPage} 
         options={({ navigation }) => ({
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
-              style={{ marginRight: 15 }}
-            >
-              <Ionicons name="menu" size={24} color="black" />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Notification')} // Navigate to the notification page
+                style={{ marginRight: 15 }}
+              >
+                <Ionicons name="notifications" size={24} color="black"/>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+                style={{ marginRight: 15 }}
+              >
+                <Ionicons name="menu" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           ),
         })}
       />
@@ -107,6 +117,11 @@ const MainStackNavigator = () => {
             </TouchableOpacity>
           ),
         })}
+      />
+       <Stack.Screen 
+        name="Notification" 
+        component={NotificationScreen} // Add the NotificationScreen component here
+        options={{ headerTitle: 'Notifications' }} // Set header title
       />
       {/* Add other screens here */}
     </Stack.Navigator>
