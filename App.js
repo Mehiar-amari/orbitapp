@@ -96,7 +96,7 @@ const MainStackNavigator = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => navigation.openDrawer()}
-                style={{ marginRight: 15 }}
+                style={{ marginRight: 5 }}
               >
                 <Ionicons name="menu" size={24} color="black" />
               </TouchableOpacity>
@@ -109,19 +109,27 @@ const MainStackNavigator = () => {
         component={PageH} 
         options={({ navigation }) => ({
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
-              style={{ marginRight: 15 }}
-            >
-              <Ionicons name="menu" size={24} color="black" />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Notification')} // Navigate to the notification page
+                style={{ marginRight: 15 }}
+              >
+                <Ionicons name="notifications" size={24} color="black"/>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+                style={{ marginRight: 5 }}
+              >
+                <Ionicons name="menu" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           ),
         })}
       />
        <Stack.Screen 
         name="Notification" 
         component={NotificationScreen} // Add the NotificationScreen component here
-        options={{ headerTitle: 'Notifications' }} // Set header title
+        options={{ headerTitle: 'Notifications' ,headerTitleAlign: 'center'}} // Set header title
       />
       {/* Add other screens here */}
     </Stack.Navigator>

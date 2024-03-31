@@ -1,91 +1,123 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { List, IconButton } from 'react-native-paper';
+import { MaterialCommunityIcons } from 'react-native-vector-icons';
 
 const NotificationScreen = () => {
-  const notifications = [
-    { id: 1, zone: 'TGBT1', device: 'D1', parameter: 'Power Factor', status: 'Pre-Alarm' },
-    { id: 2, zone: 'TGBT2', device: 'D2', parameter: 'Voltage', status: 'Alarm' },
-    { id: 3, zone: 'TGBT3', device: 'D3', parameter: 'Current', status: 'Normal' },
-    { id: 4, zone: 'TGBT4', device: 'D4', parameter: 'Temperature', status: 'Pre-Alarm' },
-    { id: 5, zone: 'TGBT5', device: 'D5', parameter: 'Humidity', status: 'Normal' },
-  ];
+  const [notifications, setNotifications] = useState([]);
 
-  const [expandedIds, setExpandedIds] = useState([]);
+  useEffect(() => {
+    const fetchData = () => {
+      fetch('https://orbitsmart.energy/notification/settings/active/6506dfa5aa3237acf9bd8c7e')
+        .then(response => response.json())
+        .then(data => {
+          // Map the fetched data to update the status based on the level property
+          const updatedNotifications = data.map(notification => ({
+            ...notification,
+            status: getStatus(notification.notification.level)
+          }));
+          setNotifications(updatedNotifications);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    };
 
-  const toggleExpand = (id) => {
-    setExpandedIds(prevIds => {
-      if (prevIds.includes(id)) {
-        return prevIds.filter(prevId => prevId !== id);
-      } else {
-        return [...prevIds, id];
-      }
-    });
-  };
+    // Fetch data initially
+    fetchData();
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Pre-Alarm':
-        return '#FFA500'; // Orange
-      case 'Alarm':
-        return '#FF0000'; // Red
-      case 'Normal':
-        return '#00FF00'; // Green
+    // Set interval to fetch data every 30 seconds
+    const intervalId = setInterval(fetchData, 30000);
+
+    // Cleanup function to clear interval
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const getStatus = level => {
+    switch (level) {
+      case 'crit':
+        return 'Alarm';
+      case 'warn':
+        return 'Pre-Alarm';
       default:
-        return '#000000'; // Black
+        return 'Normal';
     }
   };
 
-  const TitleComponent = ({ zone, status }) => (
-    <View style={styles.titleContainer}>
-        <IconButton
-          icon="bell"
-          color="#000" // Adjust color as needed
-          onPress={() => console.log("Bell icon pressed")} // Add your functionality here
-        />
-     <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-        <Text style={[styles.zoneText]}>Zone: {zone}</Text>
-        <Text style={[styles.statusText, { color: getStatusColor(status) }]}>Status: {status}</Text>
-      </View>
-    </View>
-  );
-
   return (
-    <View style={styles.container}> {/* Wrap your content in a View */}
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.container}>
         {notifications.map(notification => (
-          <List.Accordion
-            key={notification.id}
-            title={<TitleComponent zone={notification.zone} status={notification.status} />}
-            expanded={expandedIds.includes(notification.id)}
-            onPress={() => toggleExpand(notification.id)}
-            style={styles.card}
-          >
-            <View style={styles.expandedContent}>
-              <List.Item
-                title={`Device: ${notification.device}`}
-                left={() => <List.Icon icon="device" />}
-                style={styles.item}
-              />
-              <List.Item
-                title={`Parameter: ${notification.parameter}`}
-                left={() => <List.Icon icon="tune" />}
-                style={styles.item}
-              />
-            </View>
-          </List.Accordion>
+          <AccordionItem key={notification.notification.device_id} notification={notification} />
         ))}
       </View>
+    </ScrollView>
   );
-}
+};
+
+const AccordionItem = ({ notification }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  return (
+    <List.Accordion
+      title={<TitleComponent zone={notification.zone.zone_name} status={notification.status} />}
+      expanded={expanded}
+      onPress={toggleExpand}
+      style={styles.card}
+    >
+      <View style={styles.expandedContent}>
+        <List.Item
+          title={`Device: ${notification.device.device_name}`}
+          left={() => <MaterialCommunityIcons name="devices" size={24} />}
+          style={styles.item}
+        />
+        <List.Item
+          title={`Name: ${notification.notification.name}`}
+          left={() => <MaterialCommunityIcons name="devices" size={24} />}
+          style={styles.item}
+        />
+        <List.Item
+          title={`Parameter: ${notification.notification.parameter}`}
+          left={() => <List.Icon icon="tune" />}
+          style={styles.item}
+        />
+      </View>
+    </List.Accordion>
+  );
+};
+
+const TitleComponent = ({ zone, status }) => (
+  <View style={styles.titleContainer}>
+    <IconButton icon="bell" color="#000" onPress={() => console.log('Bell icon pressed')} />
+    <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+      <Text style={[styles.zoneText]}>Zone: {zone}</Text>
+      <Text style={[styles.statusText, { color: getStatusColor(status) }]}>Status: {status}</Text>
+    </View>
+  </View>
+);
+
+const getStatusColor = status => {
+  switch (status) {
+    case 'Pre-Alarm':
+      return '#FFA500'; // Orange
+    case 'Alarm':
+      return '#FF0000'; // Red
+    case 'Normal':
+      return '#00FF00'; // Green
+    default:
+      return '#000000'; // Black
+  }
+};
 
 const styles = StyleSheet.create({
   scrollView: {
-    flexGrow: 1,
-    },
+    flex: 1,
+  },
   container: {
-     flex: 1,
-     backgroundColor: '#F5F5F5',
-    },
+    backgroundColor: '#F5F5F5',
+  },
   card: {
     margin: 10,
     borderRadius: 10,
