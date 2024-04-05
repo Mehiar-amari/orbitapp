@@ -12,7 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from
 import { Octicons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import { FontAwesome5 } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import NotificationScreen from './screens/NotificationScreen'; // Import the new screen component
-
+import registerNNPushToken from 'native-notify';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -61,6 +61,7 @@ function DrawerContent({ navigation }) {
 }
 
 export default function App() {
+  registerNNPushToken(20599, '3DV38foyaHwhwuG7e7vieM');
   return (
     <NavigationContainer>
       <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />} >

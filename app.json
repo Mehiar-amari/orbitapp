@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "project",
-    "slug": "project",
+    "slug": "expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mehiar.project"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3aeec383-43b7-4d3a-a06c-3c72a20bf784"
+      }
+    },
+    "owner": "mehiar"
   }
 }
