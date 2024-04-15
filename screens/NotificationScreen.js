@@ -16,12 +16,17 @@ const NotificationScreen = () => {
             ...notification,
             status: getStatus(notification.notification.level)
           }));
-           // Check for status change from "warn" to "crit" and trigger notification
-           updatedNotifications.forEach(notification => {
-            if (notification.status === 'Alarm') {
+          
+          // Send notifications for status changes and new notifications
+          updatedNotifications.forEach(notification => {
+            const previousNotification = notifications.find(notif => notif.notification.device_id === notification.notification.device_id);
+            if (!previousNotification) {
+              sendNotification(notification);
+            } else if (previousNotification.status !== notification.status) {
               sendNotification(notification);
             }
           });
+          
           setNotifications(updatedNotifications);
         })
         .catch(error => console.error('Error fetching data:', error));
@@ -35,7 +40,7 @@ const NotificationScreen = () => {
 
     // Cleanup function to clear interval
     return () => clearInterval(intervalId);
-  }, []);
+  }, [notifications]); // Add notifications as dependency
 
   const getStatus = level => {
     switch (level) {
@@ -47,34 +52,47 @@ const NotificationScreen = () => {
         return 'Normal';
     }
   };
+
   const sendNotification = (notification) => {
-    // Check if the status changed from 'warn' to 'crit'
-    const previousNotification = notifications.find(notif => notif.notification.device_id === notification.notification.device_id);
-    if (previousNotification && previousNotification.status === 'Pre-Alarm' && notification.status === 'Alarm') {
-      // Send notification using Native Notify API
-      fetch('https://app.nativenotify.com/in-app', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 3DV38foyaHwhwuG7e7vieM'
-        },
-        body: JSON.stringify({
-          title: 'Alarm Notification',
-          message: `Device: ${notification.device.device_name} is in ${notification.status} state.`
-        })
+  let message = '';
+
+  // Determine the status based on the level property of the notification
+  const status = getStatus(notification.notification.level);
+
+  // Determine the message based on the situation
+  if (!notifications.find(notif => notif.notification.device_id === notification.notification.device_id)) {
+    // New item added
+    message = `${notification.device.device_name} (${notification.notification.name}) is added`;
+  } else if (notification.status !== status) {
+    // Status changed
+    message = `The status of '${notification.notification.name}' on ${notification.device.device_name} is changed to ${status}`;
+  }
+
+  if (message) {
+    // Send notification using Native Notify API
+    fetch('https://app.nativenotify.com/in-app', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer 3DV38foyaHwhwuG7e7vieM'
+      },
+      body: JSON.stringify({
+        title: 'Alarm Notification',
+        message: message
       })
-      .then(response => {
-        if (response.ok) {
-          console.log('Notification sent successfully');
-        } else {
-          console.error('Failed to send notification');
-        }
-      })
-      .catch(error => {
-        console.error('Error sending notification:', error);
-      });
-    }
-  };
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Notification sent successfully');
+      } else {
+        console.error('Failed to send notification');
+      }
+    })
+    .catch(error => {
+      console.error('Error sending notification:', error);
+    });
+  }
+};
 
   return (
     <ScrollView style={styles.scrollView}>
