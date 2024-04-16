@@ -13,6 +13,8 @@ import { Octicons } from '@expo/vector-icons'; // Import MaterialIcons from Expo
 import { FontAwesome5 } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import NotificationScreen from './screens/NotificationScreen'; // Import the new screen component
 import registerNNPushToken from 'native-notify';
+import analytics from './screens/analytics';
+
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -36,7 +38,7 @@ function DrawerContent({ navigation }) {
   <Ionicons name="mail" size={20} color="white" style={styles.icon} />
     <Text style={styles.text}>Mailing</Text>
   </TouchableOpacity>
-  <TouchableOpacity style={styles.drawerItem} onPress={() => navigateToScreen('PageH')}>
+  <TouchableOpacity style={styles.drawerItem} onPress={() => navigateToScreen('analytics')}>
   <Ionicons name="stats-chart" size={20} color="white" style={styles.icon} />
     <Text style={styles.text}>Analytics</Text>
   </TouchableOpacity>
@@ -130,7 +132,49 @@ const MainStackNavigator = () => {
        <Stack.Screen 
         name="Notification" 
         component={NotificationScreen} // Add the NotificationScreen component here
-        options={{ headerTitle: 'Notifications' ,headerTitleAlign: 'center'}} // Set header title
+        options={({ navigation }) => ({
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Notification')} // Navigate to the notification page
+                style={{ marginRight: 15 }}
+              >
+                <Ionicons name="notifications" size={24} color="black"/>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+                style={{ marginRight: 5 }}
+              >
+                <Ionicons name="menu" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+          ),
+        })}
+        
+      />
+
+
+<Stack.Screen 
+        name="analytics" 
+        component={analytics} // Add the NotificationScreen component here
+        options={({ navigation }) => ({
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Notification')} // Navigate to the notification page
+                style={{ marginRight: 15 }}
+              >
+                <Ionicons name="notifications" size={24} color="black"/>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.openDrawer()}
+                style={{ marginRight: 5 }}
+              >
+                <Ionicons name="menu" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+          ),
+        })}
       />
       {/* Add other screens here */}
     </Stack.Navigator>
