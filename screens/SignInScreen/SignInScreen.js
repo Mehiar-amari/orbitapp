@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, StyleSheet, useWindowDimensions, SafeAreaView, TouchableOpacity, ScrollView ,Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, View, TextInput, StyleSheet, useWindowDimensions, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
 import Colors from '../../constants/Colors';
 import { useNavigation } from '@react-navigation/native';
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+const super_user_id = '650aa3373def3736fdb3b666'
+
 
 const SignInScreen = () => {
   const { height } = useWindowDimensions();
@@ -15,6 +18,29 @@ const SignInScreen = () => {
   // Use useNavigation hook to get the navigation object
   const navigation = useNavigation();
 
+
+  useEffect(() => {
+    let ws = new W3CWebSocket(
+      "wss://" + "orbitsmart.energy" +
+      "/Mongo/get_analyse_devices_by_user_id"
+    );
+
+    ws.onopen = () => {
+      console.log("ws opened");
+      ws.send(JSON.stringify({
+        super_user_id:
+          super_user_id
+      }));
+    };
+    ws.onclose = () => console.log("ws closed");
+    ws.onmessage = async (e) => {
+      const message = await JSON.parse(e.data);
+      console.log("message", message);
+
+    };
+  }, [])
+
+  
   const handleEmailChange = (text) => {
     setEmail(text);
     if (text.length > 30) {
@@ -38,10 +64,10 @@ const SignInScreen = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View style={{ flex: 1, marginHorizontal: 40, justifyContent: 'center' }}>
           <View>
-          <Image
-            source={require('../../assets/picture2.png')}
-           style={{ width: 150, height: 150, resizeMode: 'contain' }}
-          />
+            <Image
+              source={require('../../assets/picture2.png')}
+              style={{ width: 150, height: 150, resizeMode: 'contain' }}
+            />
           </View>
 
 
@@ -52,7 +78,7 @@ const SignInScreen = () => {
               color: Colors.black,
             }}> Welcome! 👋 </Text>
           </View>
-          <View style={{height:10}}/>
+          <View style={{ height: 10 }} />
 
           <View >
             <Text style={{
@@ -60,7 +86,7 @@ const SignInScreen = () => {
               color: Colors.black,
             }}> Please sign in to your account! </Text>
           </View>
-          <View style={{height:20}}/>
+          <View style={{ height: 20 }} />
 
           <View style={{ backgroundColor: 'rgba(128,128,128,0.2)', height: 1, marginBottom: 20 }} />
 
@@ -133,7 +159,7 @@ const SignInScreen = () => {
           </TouchableOpacity>
 
 
-          
+
         </View>
       </ScrollView>
     </SafeAreaView>
