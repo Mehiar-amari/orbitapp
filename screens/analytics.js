@@ -1,5 +1,5 @@
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, ScrollView, Dimensions, TouchableWithoutFeedback,TouchableOpacity, TextInput,Platform,Button ,StyleSheet} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Badge, Modal } from 'react-native-paper';
@@ -9,18 +9,126 @@ import { Ionicons } from 'react-native-vector-icons'; // Import Ionicons from Re
 import { FontAwesome } from '@expo/vector-icons'; 
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
 import { Octicons } from '@expo/vector-icons'; // Import MaterialIcons from Expo Vector Icons
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+const super_user_id = '650aa3373def3736fdb3b666'
+
+
+
+
+
+
 
 const Analytics = () => {
-  const [selectedItems, setSelectedItems] = useState([]);
+
+  const [jdata, setData] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [currentValue, setCurrentValue] = useState([]);
-  
+  const [currentValue, setCurrentValue] = useState(null);
+  const [items, setItems] = useState([]);
+
+
 
   const [isOpen2, setIsOpen2] = useState(false);
-  const [currentValue2, setCurrentValue2] = useState([]);
+  const [currentValue2, setCurrentValue2] = useState(null);
+  const [items2, setItems2] = useState([]);
+
+
 
   const [isOpen3, setIsOpen3] = useState(false);
-  const [currentValue3, setCurrentValue3] = useState([]);
+  const [currentValue3, setCurrentValue3] = useState(null);
+  const [items3, setItems3] = useState([]);
+
+
+  useEffect(() => {
+    const ws = new WebSocket(
+      "wss://orbitsmart.energy/Mongo/get_analyse_devices_by_user_id"
+    );
+
+    ws.onopen = () => {
+      console.log("WebSocket opened");
+      ws.send(JSON.stringify({
+        super_user_id: super_user_id // Assuming super_user_id is defined somewhere
+      }));
+    };
+
+    ws.onmessage = async (e) => {
+      const message = await JSON.parse(e.data);
+      console.log("WebSocket message", message);
+      setData(message); // Set the received data to state
+    };
+
+    ws.onclose = () => console.log("WebSocket closed");
+
+    return () => {
+      // Cleanup function
+      ws.close();
+    };
+  }, []); // Empty dependency array to run the effect only once on mount
+
+
+
+
+// this is the type device section it shows the elements in the list 
+  useEffect(() => {
+    if (jdata && jdata.data && jdata.data.devices) {
+      const devices = jdata.data.devices;
+      const deviceTypes = {};
+      devices.forEach(device => {
+        const type = device.device_type;
+        deviceTypes[type] = (deviceTypes[type] || 0) + 1;
+      });
+      const dropdownItems = Object.keys(deviceTypes).map(type => ({
+        label: type,
+        value: type
+      }));
+      setItems(dropdownItems);
+    }
+  }, [jdata]);
+
+
+// this is the usine section it shows the elements in the list 
+useEffect(() => {
+  if (jdata && jdata.data && jdata.data.usine) {
+    const usines = jdata.data.usine;
+    const dropdownItems = usines.map(usine => ({
+      label: usine.usine_name,
+      value: {
+        usineName: usine.usine_name,
+        usineId: usine._id
+      }
+    }));
+    setItems2(dropdownItems);
+  }
+}, [jdata]);
+
+
+
+// this is the station section it shows the elements in the list 
+ useEffect(() => {
+  if (jdata && jdata.data && jdata.data.station) {
+    const stations = jdata.data.station;
+    const dropdownItems = stations.map(station => ({
+      label: station.station_name,
+      value: {
+        stationId: station._id,
+        stationName: station.station_name,
+        stationUsineId: station.usine_id
+      }
+    }));
+    setItems3(dropdownItems);
+  }
+}, [jdata]);
+
+
+
+
+
+
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  
+
+
+ 
 
   const [isOpen4, setIsOpen4] = useState(false);
   const [currentValue4, setCurrentValue4] = useState([]);
@@ -35,24 +143,14 @@ const Analytics = () => {
   const [currentValue7, setCurrentValue7] = useState([]);
 
 
-  const items2 = [];
+
  
   const [showModal, setShowModal] = useState(false)
 
   const screenWidth = Dimensions.get('window').width;
   const dropdownWidth = screenWidth - 40; // 20px padding on each side
-  const items = [
-    { label: 'Option 1', value: 'option1' },
-    { label: 'Option 2', value: 'option2' },
-    { label: 'Option 3', value: 'option3' },
-    { label: 'Option 4', value: 'option4' },
-    { label: 'Option 5', value: 'option5' },
-    { label: 'Option 6', value: 'option6' },
-  ];
 
-
-
-  
+ 
   
   
   const handlePressOutside = () => {
@@ -129,7 +227,30 @@ const showMode2 = (currentMode2) =>{
   setShow2(true);
   setMode2(currentMode2);
 }
+// this is the condition for station to only show elemnts in items only when usisne is selected
 
+useEffect(() => {
+  if (!currentValue2 || currentValue2.length === 0 ) {
+    setItems3([]);
+    return; 
+  }
+
+  if (jdata && jdata.data && jdata.data.station && jdata.data.usine ) {
+    const stations = jdata.data.station;
+    const stationNames = {};
+  
+    stations.forEach(station => {
+      const stationName = station.station_name;
+      stationNames[stationName] = (stationNames[stationName] || 0) + 1;
+    });
+  
+    const dropdownItems = Object.keys(stationNames).map(stationName => ({
+      label: stationName,
+      value: stationName
+    }));
+    setItems3(dropdownItems);
+  }
+}, [jdata, currentValue2]);
 
 
 
@@ -141,6 +262,7 @@ const showMode2 = (currentMode2) =>{
         <View style={{ marginTop: 20, paddingLeft: 20 }}>
           <Text style={{ fontSize: 24, fontWeight: "bold", color: "#888888" }}>Configuration</Text>
         </View>
+        {jdata && (
         <View style={{ marginTop: 30, paddingLeft: 20 , zIndex: 100000}}>
           <Text style={{ fontSize: 14, color: '#333', marginBottom: 10 }}>Select Type device:</Text>
           <DropDownPicker
@@ -163,12 +285,12 @@ const showMode2 = (currentMode2) =>{
             containerStyle={{ width: dropdownWidth, zIndex: 2000 }} // Adjust height and width as needed
           />
         </View>
-
+        )}
 
         <View style={{ marginTop: 30, paddingLeft: 20, zIndex: 10000 }}>
           <Text style={{ fontSize: 14, color: '#333', marginBottom: 10 }}>Select Usines:</Text>
           <DropDownPicker
-            items={items}
+            items={items2}
             open={isOpen2}
             setOpen={() => setIsOpen2(!isOpen2)}
             value={currentValue2}
@@ -194,7 +316,7 @@ const showMode2 = (currentMode2) =>{
         <View style={{ marginTop: 30, paddingLeft: 20, zIndex: 9000 }}>
           <Text style={{ fontSize: 14, color: '#333', marginBottom: 10 }}>Select Stations:</Text>
           <DropDownPicker
-            items={items}
+            items={items3}
             open={isOpen3}
             setOpen={() => setIsOpen3(!isOpen3)}
             value={currentValue3}
@@ -375,12 +497,14 @@ const showMode2 = (currentMode2) =>{
 
 const styles = StyleSheet.create({
   button: {
+    marginTop:20,
+    padding:50,
     flexDirection: 'row',
     backgroundColor: '#007bff', // Blue background color
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 5, // Adjusted paddingHorizontal value
+    paddingHorizontal: 20,
     borderRadius: 5,
   },
   text: {
