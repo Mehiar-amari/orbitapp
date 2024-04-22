@@ -38,6 +38,15 @@ const Analytics = () => {
   const [items3, setItems3] = useState([]);
 
 
+  const [isOpen4, setIsOpen4] = useState(false);
+  const [currentValue4, setCurrentValue4] = useState(null);
+  const [items4, setItems4] = useState([]);
+
+  const [isOpen5, setIsOpen5] = useState(false);
+  const [currentValue5, setCurrentValue5] = useState(null);
+  const [items5, setItems5] = useState([]);
+
+
   useEffect(() => {
     const ws = new WebSocket(
       "wss://orbitsmart.energy/Mongo/get_analyse_devices_by_user_id"
@@ -118,10 +127,38 @@ useEffect(() => {
   }
 }, [jdata]);
 
+useEffect(() => {
+  console.log("Updating items4...");
+  console.log("jdata:", jdata); // Check jdata structure and content
+  if (jdata && jdata.data && jdata.data.zones) {
+    const zones = jdata.data.zones; // Correct variable name
+    console.log("Zones:", zones); // Check zones content
+    const dropdownItems = zones.map(zone => ({ // Fix variable name here as well
+      label: zone.zone_name,
+      value: {
+        zoneId: zone._id,
+        zoneName: zone.zone_name,
+        stationId: zone.station_id,
+        userId: zone.user_id
+      }
+    }));
+    console.log("Dropdown items:", dropdownItems); // Check generated dropdown items
+    setItems4(dropdownItems);
+  }
+}, [jdata]);
 
 
-
-
+// this is the usine section it shows the elements in the list 
+useEffect(() => {
+  if (jdata && jdata.data && jdata.data.devices) {
+    const hdevices = jdata.data.devices;
+    const dropdownItems = hdevices.map(devices => ({
+      label: devices.device_name,
+      value: devices.device_name,
+    }));
+    setItems5(dropdownItems);
+  }
+}, [jdata]);
 
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -130,11 +167,9 @@ useEffect(() => {
 
  
 
-  const [isOpen4, setIsOpen4] = useState(false);
-  const [currentValue4, setCurrentValue4] = useState([]);
+  
 
-  const [isOpen5, setIsOpen5] = useState(false);
-  const [currentValue5, setCurrentValue5] = useState([]);
+  
 
   const [isOpen6, setIsOpen6] = useState(false);
   const [currentValue6, setCurrentValue6] = useState([]);
@@ -230,7 +265,7 @@ const showMode2 = (currentMode2) =>{
 // this is the condition for station to only show elemnts in items only when usisne is selected
 
 useEffect(() => {
-  if (!currentValue2 || currentValue2.length === 0 ) {
+  if (!currentValue2 || currentValue2.length === 0  ) {
     setItems3([]);
     return; 
   }
@@ -252,10 +287,81 @@ useEffect(() => {
   }
 }, [jdata, currentValue2]);
 
+useEffect(() => {
+  // Reset currentValue3 when currentValue2 changes
+  setCurrentValue3([]);
+}, [currentValue2]);
 
 
 
 
+// this is the condition for zones to only show elemnts in items only when station is selected
+useEffect(() => {
+  if (!currentValue3 || currentValue3.length === 0 ) {
+    setItems4([]);
+    return; 
+  }
+
+  if (jdata && jdata.data && jdata.data.zones && jdata.data.station ) {
+    const zzone = jdata.data.zones;
+    const zoneNames = {};
+  
+    zzone.forEach(zones => {
+      const zoneName = zones.zone_name;
+      zoneNames[zoneName] = (zoneNames[zoneName] || 0) + 1;
+    });
+  
+    const dropdownItems = Object.keys(zoneNames).map(zoneName => ({
+      label: zoneName,
+      value: zoneName
+    }));
+    setItems4(dropdownItems);
+  }
+}, [jdata, currentValue3]);
+useEffect(() => {
+  // Reset currentValue3 when currentValue2 changes
+  setCurrentValue3([]);
+}, [currentValue2]);
+useEffect(() => {
+  // Reset currentValue3 when currentValue2 changes
+  setCurrentValue4([]);
+}, [currentValue3]);
+
+// this is the condition for devices to only show elemnts in items only when zones is selected
+useEffect(() => {
+  if (!currentValue4 || currentValue4.length === 0) {
+    setItems5([]);
+    return; 
+  }
+
+  if (jdata && jdata.data && jdata.data.devices) {
+    const devices = jdata.data.devices;
+    const deviceNames = {};
+  
+    devices.forEach(device => {
+      const deviceName = device.device_name;
+      deviceNames[deviceName] = (deviceNames[deviceName] || 0) + 1;
+    });
+  
+    const dropdownItems = Object.keys(deviceNames).map(deviceName => ({
+      label: deviceName,
+      value: deviceName
+    }));
+    setItems5(dropdownItems);
+  }
+}, [jdata, currentValue4]);
+useEffect(() => {
+  // Reset currentValue3 when currentValue2 changes
+  setCurrentValue3([]);
+}, [currentValue2]);
+useEffect(() => {
+  // Reset currentValue3 when currentValue2 changes
+  setCurrentValue4([]);
+}, [currentValue3]);
+useEffect(() => {
+  // Reset currentValue3 when currentValue2 changes
+  setCurrentValue5([]);
+}, [currentValue4]);
   return (
     <TouchableWithoutFeedback onPress={handlePressOutside}>
       <ScrollView style={{ flex: 1, backgroundColor: "#FFFFFF" }} >
@@ -343,7 +449,7 @@ useEffect(() => {
         <View style={{ marginTop: 30, paddingLeft: 20 , zIndex: 8000}}>
           <Text style={{ fontSize: 14, color: '#333', marginBottom: 10 }}>Select Zones:</Text>
           <DropDownPicker
-            items={items}
+            items={items4}
             open={isOpen4}
             setOpen={() => setIsOpen4(!isOpen4)}
             value={currentValue4}
@@ -369,7 +475,7 @@ useEffect(() => {
         <View style={{ marginTop: 30, paddingLeft: 20 , zIndex: 7000}}>
           <Text style={{ fontSize: 14, color: '#333', marginBottom: 10 }}>Select Devices:</Text>
           <DropDownPicker
-            items={items}
+            items={items5}
             open={isOpen5}
             setOpen={() => setIsOpen5(!isOpen5)}
             value={currentValue5}
@@ -475,13 +581,13 @@ useEffect(() => {
   )}
 </View>
 
-
-
-<TouchableOpacity style={styles.button}>
-      <Ionicons name="send" size={24} color="white" />
-      <Text style={styles.text}>Send</Text>
-    </TouchableOpacity>
-
+<View  style={{ marginTop: 20, paddingLeft: 20 }}></View>
+<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  <TouchableOpacity style={styles.button}>
+    <Ionicons name="send" size={20} color="white" />
+    <Text style={styles.text}>Send</Text>
+  </TouchableOpacity>
+</View>
 
 
        <View  style={{ marginTop: 500, paddingLeft: 20 }}></View>
@@ -497,15 +603,16 @@ useEffect(() => {
 
 const styles = StyleSheet.create({
   button: {
-    marginTop:20,
-    padding:50,
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     backgroundColor: '#007bff', // Blue background color
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     borderRadius: 5,
+    width: '80%', // Adjust the width as needed
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5,
   },
   text: {
     color: 'white', // White text color
@@ -513,4 +620,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+
 export default Analytics;
