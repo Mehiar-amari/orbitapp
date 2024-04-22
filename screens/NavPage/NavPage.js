@@ -11,7 +11,7 @@ import Colors from '../../constants/Colors';
 import * as Progress from 'react-native-progress';
 import { LineChart,BarChart,ProgressChart,ContributionGraph,StackedBarChart} from "react-native-chart-kit";
 import { useNavigation } from '@react-navigation/native';
-
+import { VictoryPie } from 'victory-pie';
 
 
 
@@ -20,6 +20,14 @@ import { useNavigation } from '@react-navigation/native';
 
 const NavPage = () => {
   const [jdata, setData] = useState(null);
+
+  const dataa = [
+    { x: 'gas', y: 20, color: 'yellow' },
+    { x: 'active \n energy \n exported', y: 30, color: 'green' },
+    { x: 'active \n energy  \n imported', y: 25, color: 'blue' },
+    { x: 'reactive \n energy \n exported', y: 25, color: 'orange' },
+  ];
+
 
   useEffect(() => {
     fetchData();
@@ -67,7 +75,7 @@ const data = {
             borderBottomRightRadius: 15,
             borderBottomLeftRadius: 15,
             marginTop: 20,
-            
+            shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5,
           }}
         >
           <View
@@ -102,7 +110,7 @@ const data = {
              
             }}
           >
-            <Text style={{  ...FONTS.h4,color: 'white',  textAlign: 'center' }}>Add Usine</Text>
+            <Text style={{  ...FONTS.h4,color: 'white',  textAlign: 'center', }}>Add Usine</Text>
           </TouchableOpacity>
         </View>
 
@@ -114,7 +122,7 @@ const data = {
             borderBottomRightRadius: 15,
             borderBottomLeftRadius: 15,
             marginTop: 15,
-            
+            shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5,
           }}
         >
           
@@ -270,6 +278,7 @@ const data = {
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15,
     marginTop: 15,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5,
   }}
 >
   <View
@@ -286,12 +295,12 @@ const data = {
     <View style={{ flexDirection: 'row', alignItems: 'center',flex: 1 }}>
       {/* Text */}
       {jdata ? (
-      <Text style={{ ...FONTS.h4, color: "#676767",fontWeight: "bold",textAlign: 'center', marginBottom: -2,marginLeft:90}}> {usine.usine_name}</Text>
+     <Text style={{ ...FONTS.h4, color: "#676767",fontWeight: "bold",textAlign: 'center', marginBottom: -2,marginLeft:90}}> {usine.usine_name}</Text>
       ) : (
         <Text >Loading...</Text>
       )}
       {/* Setting Icon */}
-      <View style={{ position: 'absolute',marginLeft: 270,marginTop: 2 }}>
+      <View style={{ position: 'absolute', right: '-5%',marginTop: 2 }}>
     <TouchableOpacity onPress={() => console.log("Setting button pressed")}>
       <MaterialIcons name="settings" size={30} color="#898C95" />
     </TouchableOpacity>
@@ -345,7 +354,9 @@ const data = {
         <MaterialIcons name="arrow-downward" size={20} color="red" style={{ marginRight: 8 }} />
         <Text>3612.00 kwh</Text>
       </View>
+      
     </View>
+    
   </View>
 
 
@@ -389,7 +400,9 @@ const data = {
         
         <Text></Text>
       </View>
+      
     </View>
+    
   </View>
 
 
@@ -436,7 +449,7 @@ const data = {
 
  
 
-
+ 
 
         </View>
 
@@ -463,6 +476,7 @@ const data = {
     borderBottomLeftRadius: 15,
     marginTop: 15,
     alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5,
   }}
 >
   <View
@@ -588,73 +602,6 @@ const data = {
 
   
 
-  <LineChart
-  data={{
-    labels: ["Gas", "","ActEnrgExp","", "ActEnrgImp","", "ReactEnrgImp"],
-    datasets: [
-      {
-        data: [gas, actEnrgExp,actEnrgImp, reactEnrgImp]
-        
-      }
-    ]
-  }}
-  width={chartWidth} // from react-native
-  height={200}
-  yAxisLabel="%"
-  yAxisSuffix=""
-  yAxisInterval={1} // optional, defaults to 1
-  chartConfig={{
-    backgroundColor: "#007bff", // Bright blue background color
-    backgroundGradientFrom: "#007bff", // Bright blue gradient start color
-    backgroundGradientTo: "#0d47a1", // Dark blue gradient end color
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    style: {
-      borderRadius: 8
-    },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#ffa726"
-    },
-    
-    
-  }}
-  bezier
-  style={{
-    marginVertical: 8,
-    borderRadius: 16
-  }}
-/>
-
-
-
-
-<ProgressChart
-   data={{
-    data: [gas / total, actEnrgExp / total, actEnrgImp / total, reactEnrgImp / total]
-    
-  }}
-  width={chartWidth} // from react-native
-  height={200}
-  chartConfig={{
-    backgroundColor: "#007bff", // Bright blue background color
-    backgroundGradientFrom: "#007bff", // Bright blue gradient start color
-    backgroundGradientTo: "#0d47a1", // Dark blue gradient end color
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    style: {
-      borderRadius: 16
-    },
-    
-    
-  }}
-  style={{
-    marginVertical: 8,
-    borderRadius: 16
-  }}
-/>
-
 
 
 
@@ -662,6 +609,8 @@ const data = {
 </View>
 
         
+  <View  style={{ marginTop: 10, paddingLeft: 20 }}></View>
+
         
         </View>
       </ScrollView>

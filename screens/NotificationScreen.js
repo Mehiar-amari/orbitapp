@@ -11,13 +11,12 @@ const NotificationScreen = () => {
       fetch('https://orbitsmart.energy/notification/settings/active/6506dfa5aa3237acf9bd8c7e')
         .then(response => response.json())
         .then(data => {
-          // Map the fetched data to update the status based on the level property
           const updatedNotifications = data.map(notification => ({
             ...notification,
             status: getStatus(notification.notification.level)
           }));
-          
-          // Send notifications for status changes and new notifications
+
+          // Check for status changes and send notifications
           updatedNotifications.forEach(notification => {
             const previousNotification = notifications.find(notif => notif.notification.device_id === notification.notification.device_id);
             if (!previousNotification) {
@@ -26,7 +25,7 @@ const NotificationScreen = () => {
               sendNotification(notification);
             }
           });
-          
+
           setNotifications(updatedNotifications);
         })
         .catch(error => console.error('Error fetching data:', error));
@@ -36,11 +35,11 @@ const NotificationScreen = () => {
     fetchData();
 
     // Set interval to fetch data every 30 seconds
-    const intervalId = setInterval(fetchData, 30000);
+    const intervalId = setInterval(fetchData, 3000);
 
     // Cleanup function to clear interval
     return () => clearInterval(intervalId);
-  }, [notifications]); // Add notifications as dependency
+  }, []); // Empty dependency array to fetch data only once initially
 
   const getStatus = level => {
     switch (level) {
@@ -54,32 +53,20 @@ const NotificationScreen = () => {
   };
 
   const sendNotification = (notification) => {
-  let message = '';
+    const requestBody = {
+      appId: 20599,
+      appToken: "3DV38foyaHwhwuG7e7vieM",
+      title: "Orbit App",
+      body: "Notification for " + notification.notification.name, // Change the body to include the notification name
+      dateSent: new Date().toLocaleString(),
+    };
 
-  // Determine the status based on the level property of the notification
-  const status = getStatus(notification.notification.level);
-
-  // Determine the message based on the situation
-  if (!notifications.find(notif => notif.notification.device_id === notification.notification.device_id)) {
-    // New item added
-    message = `${notification.device.device_name} (${notification.notification.name}) is added`;
-  } else if (notification.status !== status) {
-    // Status changed
-    message = `The status of '${notification.notification.name}' on ${notification.device.device_name} is changed to ${status}`;
-  }
-
-  if (message) {
-    // Send notification using Native Notify API
-    fetch('https://app.nativenotify.com/in-app', {
+    fetch('https://app.nativenotify.com/api/notification', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer 3DV38foyaHwhwuG7e7vieM'
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        title: 'Alarm Notification',
-        message: message
-      })
+      body: JSON.stringify(requestBody)
     })
     .then(response => {
       if (response.ok) {
@@ -91,14 +78,13 @@ const NotificationScreen = () => {
     .catch(error => {
       console.error('Error sending notification:', error);
     });
-  }
-};
+  };
 
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
-        {notifications.map(notification => (
-          <AccordionItem key={notification.notification.device_id} notification={notification} />
+        {notifications.map((notification, index) => (
+          <AccordionItem key={`${notification.notification.device_id}-${index}`} notification={notification} />
         ))}
       </View>
     </ScrollView>

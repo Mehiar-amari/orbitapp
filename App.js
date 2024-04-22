@@ -29,6 +29,7 @@ function DrawerContent({ navigation }) {
   return (
     <SafeAreaView style={styles.drawerContainer}>
   {/* Empty space */}
+  <View  style={{ marginTop: 10, paddingLeft: 20 }}></View>
   <Image source={require('./assets/orbit.png')} style={styles.image} />
   <View style={styles.emptySpace} />
   <TouchableOpacity style={styles.drawerItem} onPress={() => navigateToScreen('NavPage')}>

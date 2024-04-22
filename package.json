@@ -38,6 +38,7 @@
     "react-native-safe-area-context": "4.8.2",
     "react-native-shadow-2": "^7.0.8",
     "react-native-web": "~0.19.6",
+    "victory-pie": "^37.0.2",
     "websocket": "^1.0.34"
   },
   "devDependencies": {

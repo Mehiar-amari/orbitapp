@@ -5,93 +5,8 @@ import { FONTS, COLORS } from '../../constants/theme';
 import { FontAwesome, Octicons } from '@expo/vector-icons';
 
 const PageH = () => {
-  const [selectedMonth1, setSelectedMonth1] = useState('');
-  const [selectedMonth2, setSelectedMonth2] = useState('');
-  const [selectedMonth3, setSelectedMonth3] = useState('');
-  const [selectedMonth4, setSelectedMonth4] = useState('');
-  const [selectedMonth5, setSelectedMonth5] = useState('');
-  const [selectedMonth6, setSelectedMonth6] = useState('');
   
-  const months = [
-    'January', 'February', 'March', 'April',
-    'May', 'June', 'July', 'August',
-    'September', 'October', 'November', 'December'
-  ];
-
-  const [openPicker, setOpenPicker] = useState(null);
-
-  const handleMonthClick1 = (month) => {
-    setSelectedMonth1(month);
-    setOpenPicker(null);
-  };
-  
-
-  const handleMonthClick2 = (month) => {
-    setSelectedMonth2(month);
-    setOpenPicker(null);
-  };
-  const handleMonthClick3 = (month) => {
-    setSelectedMonth3(month);
-    setOpenPicker(null);
-  };
-
-  const handleMonthClick4 = (month) => {
-    setSelectedMonth4(month);
-    setOpenPicker(null);
-  };
-  const handleMonthClick5 = (month) => {
-    setSelectedMonth5(month);
-    setOpenPicker(null);
-  };
-  const handleMonthClick6 = (month) => {
-    setSelectedMonth6(month);
-    setOpenPicker(null);
-  };
-  
-  const renderMonthOptions = () => {
-    return months.map((month, index) => (
-      <TouchableOpacity key={index} onPress={() => handleMonthClick1(month)}>
-        <Text style={styles.monthOption}>{month}</Text>
-      </TouchableOpacity>
-    ));
-  };
-
-  const renderMonthOptions2 = () => {
-    return months.map((month, index) => (
-      <TouchableOpacity key={index} onPress={() => handleMonthClick2(month)}>
-        <Text style={styles.monthOption}>{month}</Text>
-      </TouchableOpacity>
-    ));
-  };
-  const renderMonthOptions3 = () => {
-    return months.map((month, index) => (
-      <TouchableOpacity key={index} onPress={() => handleMonthClick3(month)}>
-        <Text style={styles.monthOption}>{month}</Text>
-      </TouchableOpacity>
-    ));
-  };
-  const renderMonthOptions4 = () => {
-    return months.map((month, index) => (
-      <TouchableOpacity key={index} onPress={() => handleMonthClick4(month)}>
-        <Text style={styles.monthOption}>{month}</Text>
-      </TouchableOpacity>
-    ));
-  };
-  const renderMonthOptions5 = () => {
-    return months.map((month, index) => (
-      <TouchableOpacity key={index} onPress={() => handleMonthClick5(month)}>
-        <Text style={styles.monthOption}>{month}</Text>
-      </TouchableOpacity>
-    ));
-  };
-  const renderMonthOptions6 = () => {
-    return months.map((month, index) => (
-      <TouchableOpacity key={index} onPress={() => handleMonthClick6(month)}>
-        <Text style={styles.monthOption}>{month}</Text>
-      </TouchableOpacity>
-    ));
-  };
-
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
   
 
   return (
@@ -126,18 +41,14 @@ const PageH = () => {
               </View>
               <View style={{ marginLeft: 30 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setOpenPicker(1)}>
+                  <TouchableOpacity >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{selectedMonth1 || 'Select:Month'}</Text>
+                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{currentMonth}</Text>
                       <Text>▼</Text>
                     </View>
                   </TouchableOpacity>
                   <View style={{zIndex: 1,position:'relative'}}>
-                  {openPicker === 1 && (
-                    <View style={styles.monthOptionsContainer}>
-                      {renderMonthOptions()}
-                    </View>
-                  )}
+                
 
                   </View>
                   
@@ -160,17 +71,13 @@ const PageH = () => {
               </View>
               <View style={{ marginLeft: 30 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setOpenPicker(2)}>
+                  <TouchableOpacity >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}> {selectedMonth2 || 'Select:Month'}</Text>
+                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{currentMonth}</Text>
                       <Text>▼</Text>
                     </View>
                   </TouchableOpacity>
-                  {openPicker === 2 && (
-                    <View style={styles.monthOptionsContainer}>
-                      {renderMonthOptions2()}
-                    </View>
-                  )}
+              
                 </View>
               </View>
               <View style={{ marginLeft: 'auto' }}>
@@ -212,17 +119,13 @@ const PageH = () => {
 
               <View style={{ marginLeft: 30 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setOpenPicker(3)}>
+                  <TouchableOpacity >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{selectedMonth3 || 'Select:Month'}</Text>
+                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{currentMonth}</Text>
                       <Text>▼</Text>
                     </View>
                   </TouchableOpacity>
-                  {openPicker === 3 && (
-                    <View style={styles.monthOptionsContainer}>
-                      {renderMonthOptions3()}
-                    </View>
-                  )}
+                
                 </View>
               </View>
               <View style={{ marginLeft: 'auto' }}>
@@ -242,17 +145,13 @@ const PageH = () => {
               </View>
               <View style={{ marginLeft: 30 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setOpenPicker(4)}>
+                  <TouchableOpacity >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}> {selectedMonth4 || 'Select:Month'}</Text>
+                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}> {currentMonth}</Text>
                       <Text>▼</Text>
                     </View>
                   </TouchableOpacity>
-                  {openPicker === 4 && (
-                    <View style={styles.monthOptionsContainer}>
-                      {renderMonthOptions4()}
-                    </View>
-                  )}
+                
                 </View>
               </View>
               <View style={{ marginLeft: 'auto' }}>
@@ -294,17 +193,13 @@ const PageH = () => {
 
               <View style={{ marginLeft: 30 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setOpenPicker(5)}>
+                  <TouchableOpacity >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{selectedMonth5 || 'Select:Month'}</Text>
+                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}>{currentMonth}</Text>
                       <Text>▼</Text>
                     </View>
                   </TouchableOpacity>
-                  {openPicker === 5 && (
-                    <View style={styles.monthOptionsContainer}>
-                      {renderMonthOptions5()}
-                    </View>
-                  )}
+                  
                 </View>
               </View>
               <View style={{ marginLeft: 'auto' }}>
@@ -324,17 +219,13 @@ const PageH = () => {
               </View>
               <View style={{ marginLeft: 30 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => setOpenPicker(6)}>
+                  <TouchableOpacity >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}> {selectedMonth6 || 'Select:Month'}</Text>
+                      <Text style={{ ...FONTS.body4, fontSize: 13, marginRight: 5 }}> {currentMonth}</Text>
                       <Text>▼</Text>
                     </View>
                   </TouchableOpacity>
-                  {openPicker === 6 && (
-                    <View style={styles.monthOptionsContainer}>
-                      {renderMonthOptions6()}
-                    </View>
-                  )}
+                 
                 </View>
               </View>
               <View style={{ marginLeft: 'auto' }}>
